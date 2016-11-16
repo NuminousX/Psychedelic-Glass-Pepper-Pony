@@ -1,0 +1,23 @@
+doctype html
+html
+	head
+		title Log In
+		link(rel='stylesheet', type='text/css', href='./bootstrap.min.css')
+		link(rel='stylesheet', type='text/css', href='./style.css')
+	body
+		.jumbotron.text-center
+			h1 Log In
+		.container
+			.row
+				.col-md-offset-4
+					form(action='/login', method='POST')
+						.form-group.row
+							.form-group.col-md-6
+								label(for='username') Username:
+								input#username.form-control(name='username', placeholder='Enter Username', type='text', size='30', required='')
+						.form-group.row
+							.form-group.col-md-6
+								label(for='password') Password:
+								input#password.form-control(name='password', placeholder='Enter Password', type='password', size='30', required='')
+						.form-group.col-md-6
+							button.btn.btn-primary(type='submit') Log In
