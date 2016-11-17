@@ -15,30 +15,30 @@ html
 		.container
 			.row
 				.col-md-offset-4
-					form(action='/index', method='POST')
+					form(action='/registration', method='POST')
 						.form-group.row
 							.form-group.col-md-6
 								label(for='Username') Username:
-								input#Username.form-control(name='Username', placeholder='Enter Username', type='text', size='30', required='')
+								input#username.form-control(name='username', placeholder='Enter Username', type='text', size='30', required='')
 								small#userHelp.form-text.text-muted Create a username
 						.form-group.row
 							.form-group.col-md-6
 								label(for='Email') Email:
-								input#Email.form-control(name='Email', placeholder='Enter Email', type='email', size='30', required='')
+								input#email.form-control(name='email', placeholder='Enter Email', type='email', size='30', required='')
 								small#EmailHelp.form-text.text-muted Please fill in your Email adress
 						.form-group.row
 							.form-group.col-md-6
 								label(for='Password') Password:
-								input#Password.form-control(name='Password', placeholder='Enter Password', type='password', size='30', required='')
+								input#password.form-control(name='password', placeholder='Enter Password', type='password', size='30', required='')
 						.form-group.row
 							.form-group.col-md-6
 								label(for='Firstname') Firstname:
-								input#Firstname.form-control(name='Firstname', placeholder='Enter Firstname', type='text', size='30', required='')
+								input#firstname.form-control(name='firstname', placeholder='Enter Firstname', type='text', size='30', required='')
 								small#FirstHelp.form-text.text-muted Please enter your firstname
 						.form-group.row
 							.form-group.col-md-6
 								label(for='Lastname') Lastname:
-								input#Lastname.form-control(name='Lastname', placeholder='Enter Lastname', type='text', size='30', required='')
+								input#lastname.form-control(name='lastname', placeholder='Enter Lastname', type='text', size='30', required='')
 								small#LastHelp.form-text.text-muted Please enter your lastname
 						.form-group.col-md-6
 							button.btn.btn-primary(type='submit') submit

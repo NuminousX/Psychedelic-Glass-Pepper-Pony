@@ -20,52 +20,95 @@ app.use(express.static('static'))
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(session({
-	secret: 'oh wow very secret much security',
+	secret: 'Is submission not preferable to extinction?',
 	resave: true,
 	saveUninitialized: false
 }));
 
-//just for testing
+///////////////////////////////////////////
+/*THIS SECTION IS FOR ALL THE GET ROUTES */
+///////////////////////////////////////////
+
+// purely for test purposes
 app.get("/ping", (req, res) => {
 	
-	res.send("pong")
+	res.send("Things went to hell seven days to shit sunday")
+})
+
+// get and render the main page, which is the log in page
+app.get("/", (req, res) => {
+
+	res.render("index")
 })
 
 
-//Here I get all the necessary pages
+// get and render the account creation page
 app.get("/registration", (req, res) => {
 
 	res.render("registration")
 })
 
+// get and render the personal/profile page
+app.get("/profile", (req, res) => {
 
-app.get("/login", (req, res) => {
+	Message.findAll()
+	.then(function (messages) {
 
-	res.render("login")
+		console.log(messages)
+		res.render("profile", {data: messages})
+	})
+	
 })
 
-app.get("/", (req, res) => {
 
-	 res.render("index")
+///////////////////////////////////////////
+/*THIS SECTION IS FOR ALL THE POST ROUTES */
+///////////////////////////////////////////
+
+app.post("/registration", (req, res) => {
+
+	User.create ({
+		username: req.body.username,
+		password: req.body.password,
+		email: req.body.email,
+		firsname: req.body.firstname,
+		lastname: req.body.lastname
+	})
+
+	console.log("New account created !")
+
+	res.redirect('/')
+
+	
 })
 
-// app.post("/registration", (req, res) => {
+app.post('/profile', (req, res) => {
+
+	Message.create({
+		message: req.body.message
+	})
+
+	res.redirect('profile')
 
 
+})
 
-// })
-
-app.post("/login", bodyParser.urlencoded({extended: true}), function (request, response) {
+// listening to my index pug and once log in is verified redirect to the profile
+app.post("/index", bodyParser.urlencoded({extended: true}), function (request, response) {
 
 	if(request.body.username.length === 0) {
+
 		console.log("I'm fine right ?")
-		response.redirect('/?message=' + encodeURIComponent("there is something wrong with either you, or your username"));
+
+		response.redirect('/?message=' + encodeURIComponent("you sir are one giant fuck up"));
 		return;
 	}
 
 	if(request.body.password.length === 0) {
+
 		console.log("I'm fine")
-		response.redirect('/?message=' + encodeURIComponent("Mentor already used this password"));
+
+		response.redirect('/?message=' + encodeURIComponent("Hey Dumbass you forgot something "));
 		return;
 	}
 
@@ -73,29 +116,38 @@ app.post("/login", bodyParser.urlencoded({extended: true}), function (request, r
 		where: {
 			username: request.body.username
 		}
-	
+
 	}).then(function (user) {
 		if (user !== null && request.body.password === user.password) {
 			request.session.user = user;
-			response.redirect('/');
+			response.redirect('profile');
 
+		} else {
+			console.log("no user found")
 		}
 	}),
 
 	function (error) {
-        response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-    };
+		response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+	};
 });
 
+///////////////////////////////////////////
+/*THIS SECTION IS WHERE I DEFINE MY MODELS AND SYNC MY DATABASE */
+///////////////////////////////////////////
 
 // Defining a  model for the user this will create a table in the existing database
-let User = database.define('User', {
+let User = database.define('user', {
 	username: Sequelize.STRING,
 	password: Sequelize.STRING,
-	email: Sequelize.STRING,
+	email: {type: Sequelize.STRING, unique: true},
 	firstname: Sequelize.STRING,
 	lastname: Sequelize.STRING
 
+})
+
+let Message = database.define('message', {
+	message: Sequelize.STRING,
 })
 
 
@@ -109,6 +161,10 @@ database.sync({force: true}).then( ( ) => {
 		email: "a@a",
 		firsname: "a",
 		lastname: "b"
+	})
+
+	Message.create ({
+		message: "There is no such thing as innocense, only degrees of guilt"
 	})
 })
 

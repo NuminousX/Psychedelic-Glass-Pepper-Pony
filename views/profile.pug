@@ -1,0 +1,25 @@
+doctype html
+html
+	head
+		title Personal page
+		link(rel='stylesheet', type='text/css', href='./bootstrap.min.css')
+		link(rel='stylesheet', type='text/css', href='./style.css')
+	body
+		.jumbotron.text-center
+			h1 Profile
+		.container
+			.row
+				.col-md-offset-4
+					each result in data
+						p Created at: #{result.createdAt}, Post: #{result.message}
+						
+		.container
+			.row
+				.col-md-offset-4
+					form(action='/profile', method='POST')
+						.form-group.row
+							.form-group.col-md-6
+								label(for='message') message:
+								textarea#message.form-control(name='message', placeholder='Enter message', type='text')
+						.form-group.col-md-6
+							button.btn.btn-primary(type='submit') Post message
