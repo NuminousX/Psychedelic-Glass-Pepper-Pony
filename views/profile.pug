@@ -7,11 +7,18 @@ html
 	body
 		.jumbotron.text-center
 			h1 Profile
+			a(href='/logout') log out
 		.container
 			.row
 				.col-md-offset-4
 					each result in data
-						p Created at: #{result.createdAt}, Post: #{result.message}
+						p #{result.user.username}: #{result.message}
+						form(action='/comment', method='POST')
+							.form-group.row
+								.form-group.col-md-6
+									input(type='text', name='id', value='#{result.id}', hidden)
+									input(name='comment', placeholder='Enter comment', type='text')
+									button.btn.btn-primary(type='submit') comment
 						
 		.container
 			.row
@@ -20,6 +27,7 @@ html
 						.form-group.row
 							.form-group.col-md-6
 								label(for='message') message:
-								textarea#message.form-control(name='message', placeholder='Enter message', type='text')
+								input#message.form-control(name='message', placeholder='Enter message', type='text')
+
 						.form-group.col-md-6
 							button.btn.btn-primary(type='submit') Post message

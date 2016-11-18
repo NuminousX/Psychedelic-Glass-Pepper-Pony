@@ -25,6 +25,7 @@ app.use(session({
 	saveUninitialized: false
 }));
 
+
 ///////////////////////////////////////////
 /*THIS SECTION IS FOR ALL THE GET ROUTES */
 ///////////////////////////////////////////
@@ -32,7 +33,7 @@ app.use(session({
 // purely for test purposes
 app.get("/ping", (req, res) => {
 	
-	res.send("Things went to hell seven days to shit sunday")
+	res.send("Things went to hell seven ways to shit sunday")
 })
 
 // get and render the main page, which is the log in page
@@ -51,15 +52,29 @@ app.get("/registration", (req, res) => {
 // get and render the personal/profile page
 app.get("/profile", (req, res) => {
 
-	Message.findAll()
+	Message.findAll({
+		include: User
+	})
 	.then(function (messages) {
 
-		console.log(messages)
 		res.render("profile", {data: messages})
 	})
+
+
 	
 })
 
+app.get('/logout', function (request, response) {
+	request.session.destroy(function(error) {
+		if(error) {
+			throw error;
+
+
+		}
+		console.log("user has succesfully logged out")
+		response.redirect('/')
+	})
+});
 
 ///////////////////////////////////////////
 /*THIS SECTION IS FOR ALL THE POST ROUTES */
@@ -73,24 +88,38 @@ app.post("/registration", (req, res) => {
 		email: req.body.email,
 		firsname: req.body.firstname,
 		lastname: req.body.lastname
+	}).then( () => {
+		console.log("New account created !")
+		res.redirect('/')
 	})
-
-	console.log("New account created !")
-
-	res.redirect('/')
 
 	
 })
 
 app.post('/profile', (req, res) => {
+	let user = req.session.user
 
 	Message.create({
-		message: req.body.message
+		message: req.body.message,
+		userId: user.id
+	}).then( () => {
+		res.redirect('/profile')
 	})
 
-	res.redirect('profile')
+})
 
+app.post('/comment', bodyParser.urlencoded({extended: true}), (req, res) => {
 
+	console.log('new comment stored')
+	let user = req.session.user
+
+Comment.create({
+		comment: req.body.comment,
+		userId: user.id,
+		
+	}).then( () => {
+		res.redirect('/profile')
+	})
 })
 
 // listening to my index pug and once log in is verified redirect to the profile
@@ -151,6 +180,22 @@ let Message = database.define('message', {
 })
 
 
+let Comment = database.define('comment', {
+	comment: Sequelize.STRING
+})
+
+
+
+
+//defining relations
+User.hasMany( Message )
+Message.belongsTo( User)
+
+User.hasMany( Comment )
+Message.hasMany( Comment )
+Comment.belongsTo( User )
+Comment.belongsTo( Message ) 
+
 //syncing the database 
 database.sync({force: true}).then( ( ) => {
 	console.log("database synced and ready to go")
@@ -164,7 +209,8 @@ database.sync({force: true}).then( ( ) => {
 	})
 
 	Message.create ({
-		message: "There is no such thing as innocense, only degrees of guilt"
+		message: "Things went to hell seven ways to shit sunday",
+		userId: 1
 	})
 })
 
