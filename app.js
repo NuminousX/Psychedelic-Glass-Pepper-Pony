@@ -3,6 +3,7 @@ const express = require ('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('Sequelize');
 const session = require('express-session');
+const bcrypt = require('bcrypt-nodejs');
 const app = express()
 
 //connecting to the database
@@ -51,12 +52,11 @@ app.get("/registration", (req, res) => {
 
 // get and render the personal/profile page
 app.get("/profile", (req, res) => {
-
 	Message.findAll({
-		include: User
+		include: [{model: User}, {model: Comment, include: [User]}]
 	})
 	.then(function (messages) {
-
+		console.log(messages)
 		res.render("profile", {data: messages})
 	})
 
@@ -80,20 +80,28 @@ app.get('/logout', function (request, response) {
 /*THIS SECTION IS FOR ALL THE POST ROUTES */
 ///////////////////////////////////////////
 
+
+
 app.post("/registration", (req, res) => {
 
-	User.create ({
-		username: req.body.username,
-		password: req.body.password,
-		email: req.body.email,
-		firsname: req.body.firstname,
-		lastname: req.body.lastname
-	}).then( () => {
-		console.log("New account created !")
-		res.redirect('/')
-	})
 
-	
+	bcrypt.hash(req.body.password, null, null, (err, hash) => {
+		if (err) throw err;
+
+		User.create ({
+			username: req.body.username,
+			password: hash,
+			email: req.body.email,
+			firsname: req.body.firstname,
+			lastname: req.body.lastname
+		}).then( () => {
+			console.log("New account created !")
+			res.redirect('/')
+		})
+
+
+
+	})
 })
 
 app.post('/profile', (req, res) => {
@@ -113,10 +121,12 @@ app.post('/comment', bodyParser.urlencoded({extended: true}), (req, res) => {
 	console.log('new comment stored')
 	let user = req.session.user
 
-Comment.create({
+	console.log(req.body)
+	Comment.create({
 		comment: req.body.comment,
 		userId: user.id,
-		
+		messageId: req.body.id
+
 	}).then( () => {
 		res.redirect('/profile')
 	})
@@ -147,13 +157,17 @@ app.post("/index", bodyParser.urlencoded({extended: true}), function (request, r
 		}
 
 	}).then(function (user) {
-		if (user !== null && request.body.password === user.password) {
-			request.session.user = user;
-			response.redirect('profile');
 
-		} else {
-			console.log("no user found")
-		}
+		bcrypt.compare(request.body.password, user.password, function(err, res) {
+   		// res == true
+			if (user !== null && res) {
+				request.session.user = user;
+				response.redirect('profile');
+
+			} else {
+				console.log("no user found")
+			}
+		});
 	}),
 
 	function (error) {
@@ -211,6 +225,12 @@ database.sync({force: true}).then( ( ) => {
 	Message.create ({
 		message: "Things went to hell seven ways to shit sunday",
 		userId: 1
+	})
+
+	Comment.create ({
+		comment: "Bladieblabla",
+		userId: 1,
+		messageId: 1
 	})
 })
 
