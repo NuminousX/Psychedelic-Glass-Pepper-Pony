@@ -1,5 +1,5 @@
-[class*="span"].centred {
-  margin-left: auto;
-  margin-right: auto;
-  float: none;
-}
+body {
+  margin: 0;
+  background-color: #bada55; }
+
+/*# sourceMappingURL=style.css.map */

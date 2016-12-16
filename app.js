@@ -5,6 +5,8 @@ const Sequelize = require('Sequelize');
 const session = require('express-session');
 const bcrypt = require('bcrypt-nodejs');
 const app = express()
+var gulp = require('gulp');
+var sass = require('gulp-sass');
 
 //connecting to the database
 const database = new Sequelize('ethereal', 'postgres', 'falafeldragon', {
@@ -26,7 +28,11 @@ app.use(session({
 	saveUninitialized: false
 }));
 
-
+gulp.task('sass', function(){
+  return gulp.src('./static/style.scss')
+    .pipe(sass()) // Converts Sass to CSS with gulp-sass
+    .pipe(gulp.dest('./static'))
+});
 ///////////////////////////////////////////
 /*THIS SECTION IS FOR ALL THE GET ROUTES */
 ///////////////////////////////////////////
